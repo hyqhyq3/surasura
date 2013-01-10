@@ -1,0 +1,4 @@
+[Project]
+Name=counter
+Manager=KDevCMakeManager
+VersionControl=
