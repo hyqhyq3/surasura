@@ -3,8 +3,8 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp> 
-#include "inbuf.h"
-#include "outbuf.h"
+#include "../inbuf.h"
+#include "../outbuf.h"
 
 namespace counter {
     std::map<std::string, std::size_t> counter;
