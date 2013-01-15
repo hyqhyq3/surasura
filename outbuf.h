@@ -46,6 +46,19 @@ public:
         
         template<typename MutableBufferSequence>
         std::size_t write(
+            const MutableBufferSequence & buffers) 
+        {
+            boost::system::error_code ec;
+            std::size_t n;
+            n = write(buffers, ec);
+            if(ec) {
+                throw ec;
+            }
+            return n;
+        }
+        
+        template<typename MutableBufferSequence>
+        std::size_t write(
             const MutableBufferSequence & buffers,
             boost::system::error_code & ec) 
         {

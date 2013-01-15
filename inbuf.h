@@ -45,12 +45,67 @@ public:
         s_( s), coro_( coro), ca_( ca)
     { }
     
+    /// use this function if you want get enough data
+    template<typename MutableBufferSequence>
+    std::size_t read(
+        const MutableBufferSequence & buffers) 
+    {
+        boost::system::error_code ec;
+        std::size_t n;
+        n = read(buffers, ec);
+        if(ec) {
+            throw ec;
+        }
+        return n;
+    }
+    
+    /// use this function if you want get enough data
+    template<typename MutableBufferSequence>
+    std::size_t read(
+        const MutableBufferSequence & buffers,
+        boost::system::error_code & ec) 
+    {
+        boost::asio::async_read(s_, buffers, boost::bind(&coro_t::operator(), &coro_, _1, _2));
+        ca_();
+        
+        std::size_t n = 0;
+        boost::tie(ec, n) = ca_.get();
+        return n;
+    }
+    
+    template<typename MutableBufferSequence>
+    std::size_t read_some(
+        const MutableBufferSequence & buffers)
+    {
+        boost::system::error_code ec;
+        std::size_t n;
+        n = read_some(buffers, ec);
+        if(ec) {
+            throw ec;
+        }
+        return n;
+    }
+    
+    /// this function will return after get any data
     template<typename MutableBufferSequence>
     std::size_t read_some(
         const MutableBufferSequence & buffers,
         boost::system::error_code & ec) 
     {
         s_.async_read_some(buffers, boost::bind(&coro_t::operator(), &coro_, _1, _2));
+        ca_();
+        
+        std::size_t n = 0;
+        boost::tie( ec, n) = ca_.get();
+        return n;
+    }
+    
+    template <typename SyncReadStream, typename Allocator>
+    std::size_t read_until(boost::asio::basic_streambuf<Allocator>& b, 
+                           char delim,
+                           boost::system::error_code& ec)
+    {
+        boost::asio::async_read_until(s_, b, delim, boost::bind(&coro_t::operator(), &coro_, _1, _2));
         ca_();
         
         std::size_t n = 0;
